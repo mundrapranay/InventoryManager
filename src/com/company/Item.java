@@ -1,15 +1,17 @@
 package com.company;
-import java.util.*;
+
+// toDo: Maybe autogenerate an item number using random
+
 public class Item {
 
     private String name;
-    private int quatity;
+    private int quantity;
     private double price;
     private String paidBy;
 
     public Item(String name, int quantity, double price, String paidBy) {
         this.name = name;
-        this.quatity = quantity;
+        this.quantity = quantity;
         this.price = price;
         this.paidBy = paidBy;
     }
@@ -22,12 +24,12 @@ public class Item {
         this.name = name;
     }
 
-    public int getQuatity() {
-        return quatity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQuatity(int quatity) {
-        this.quatity = quatity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public double getPrice() {
@@ -54,6 +56,12 @@ public class Item {
     }
 
     public String toString () {
-        return this.getName() + " |  $" + this.getPrice() + " | " + this.getQuatity() + " | " + this.getPaidBy()+"\n";
+        return this.getName() + " |  $" + this.getPrice() + " | " + this.getQuantity() + " | " + this.getPaidBy()+"\n";
+    }
+
+    public void update (String name, int quantity, double price, String paidBy) {
+        this.setQuantity(quantity);
+        this.setPrice(price);
+        this.setPaidBy(paidBy);
     }
 }
