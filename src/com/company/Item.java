@@ -1,6 +1,7 @@
 package com.company;
 
 // toDo: Maybe autogenerate an item number using random
+// toDo: Never change item name?
 
 public class Item {
 

@@ -14,19 +14,20 @@ public class Inventory {
 
     private void intro(List<Item> list) {
         Scanner input = new Scanner(System.in);
-        System.out.println("Choose an option:\n 1. New Item(N)\n 2. View Items(V)\n 3. Update Item(U)\n 4. Quit(Q)");
+        System.out.println("Choose an option:\n 1. New Item(N)\n 2. View Items(V)\n 3. Update Item(U)\n 4. Delete Item(D)\n 5. Quit(Q)");
         String selection = input.nextLine();
         optionSelector(selection, list);
     }
 
     private void optionSelector(String selection, List<Item> list) {
+        Map<Integer, Item> searchMap;
         if (selection.equals("N")) {
             // toDo: Make New Item Object and add it to the inventory
             Scanner input = new Scanner(System.in);
-            String name = "";
-            int quantity = 0;
-            double price = 0.0;
-            String paidBy = "";
+            String name;
+            int quantity;
+            double price;
+            String paidBy;
             System.out.println("Item Name:");
             name = input.nextLine();
             System.out.println("Item Quantity:");
@@ -48,7 +49,6 @@ public class Inventory {
         } else if (selection.equals("U")) {
             // toDo: Search inventory list  view that item and give options for all getters and setters
             Scanner input2 = new Scanner(System.in);
-            Map<Integer, Item> searchMap;
             System.out.println("Search item by:\n 1. Name(N)\n 2. Quantity(Q)\n 3. Price(P)\n 4. Paid By(PB)\n 5. Main Menu(M)");
             String selection2 = input2.nextLine();
             if (selection2.equals("N")) {
@@ -66,6 +66,9 @@ public class Inventory {
                 String keyword = input2.nextLine();
                 searchMap = search(keyword, "PB", list);
                 System.out.println(searchMap);
+                System.out.println("Select Item Number:");
+                int itemNumber = input2.nextInt();
+                updateHelper(searchMap.get(itemNumber), list);
             } else if (selection2.equals("Q")) {
                 // toDo: Less than (inclusive), More than (exclusive), Equal to
                 // helper function
@@ -77,7 +80,25 @@ public class Inventory {
                 System.out.println("Invalid Option. Choose Again.\n\n");
                 optionSelector("U",list);
             }
-        } else if (selection.equals("Q")){
+        } else if (selection.equals("D")){
+            Scanner input3 = new Scanner(System.in);
+            System.out.println("Enter Name:");
+            String keyword = input3.nextLine();
+            searchMap = search(keyword,"N",list);
+            System.out.println("Select Item Number:");
+            int itemNumber = input3.nextInt();
+            System.out.println("Are you sure you want to delete item:\n" + searchMap.get(itemNumber).toString()+"\n\n Yes(Y) or No(N)");
+            String delete = input3.nextLine();
+            if (delete.equals("Y")) {
+                try {
+                    list.remove(searchMap.get(itemNumber));
+                    System.out.println("Item deleted successfully");
+                } catch (Error e) {
+                    System.out.println(e);
+                }
+            }
+            intro(list);
+        } else if (selection.equals("Q")) {
             System.exit(0);
         }else {
             System.out.println("Invalid Option. Choose Again.\n\n");
@@ -113,9 +134,9 @@ public class Inventory {
     }
 
     private Map<Integer, Item> search(String keyword, String option, List<Item> list) {
-        Map<Integer, Item> result = new TreeMap<Integer, Item>();
+        Map<Integer, Item> result = new TreeMap<>();
         int itemCount = 0;
-        String checkWord = "";
+        String checkWord;
         for (Item i : list) {
             if (option.equals("N")) {
                 checkWord = i.getName();
