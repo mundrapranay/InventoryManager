@@ -1,5 +1,12 @@
 package com.company;
 import java.util.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 
 // toDo: Make a global scanner instead of multiple scanner objects
 // toDo: Use global variables instead of local variables
@@ -7,21 +14,38 @@ import java.util.*;
 public class Inventory {
 
     private List<Item> itemList;
+    private String logFile;
 
-    public void main() {
-        itemList = new LinkedList<Item>();
-        System.out.println("Welcome to Inventory Manager");
-        intro(itemList);
+    public Inventory (String logFile, List<Item> list) {
+        this.logFile = logFile;
+        this.itemList = list;
     }
 
-    private void intro(List<Item> list) {
+    public Inventory (String logFile) {
+        this(logFile, new LinkedList<>());
+    }
+
+    public void main() throws  IOException {
+        System.out.println("Welcome to Inventory Manager");
+        try {
+            intro(itemList);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private void intro(List<Item> list) throws IOException {
         Scanner input = new Scanner(System.in);
         System.out.println("Choose an option:\n 1. New Item(N)\n 2. View Items(V)\n 3. Update Item(U)\n 4. Delete Item(D)\n 5. Quit(Q)");
         String selection = input.nextLine();
-        optionSelector(selection, list);
+        try {
+            optionSelector(selection, list);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
-    private void optionSelector(String selection, List<Item> list) {
+    private void optionSelector(String selection, List<Item> list) throws IOException {
         Map<Integer, Item> searchMap;
         if (selection.equals("N")) {
             // toDo: Make New Item Object and add it to the inventory
@@ -90,20 +114,26 @@ public class Inventory {
             System.out.println("Enter Name:");
             String keyword = input3.nextLine();
             searchMap = search(keyword,"N",list);
+            System.out.println(searchMap);
             System.out.println("Select Item Number:");
             int itemNumber = input3.nextInt();
             System.out.println("Are you sure you want to delete item:\n" + searchMap.get(itemNumber).toString()+"\n\n Yes(Y) or No(N)");
-            String delete = input3.nextLine();
+            String delete = input3.next();
             if (delete.equals("Y")) {
-                try {
-                    list.remove(searchMap.get(itemNumber));
-                    System.out.println("Item deleted successfully");
-                } catch (Error e) {
-                    System.out.println(e);
-                }
+                list.remove(searchMap.get(itemNumber));
+                System.out.println("Item deleted successfully");
             }
             intro(list);
         } else if (selection.equals("Q")) {
+            try (
+                    BufferedWriter  writer = Files.newBufferedWriter(Paths.get(logFile));
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
+                    ) {
+                for  (Item i : list) {
+                    csvPrinter.printRecord(i.getName(), i.getQuantity(), i.getPrice(), i.getPaidBy());
+                }
+                csvPrinter.flush();
+            }
             System.exit(0);
         }else {
             System.out.println("Invalid Option. Choose Again.\n\n");
@@ -111,7 +141,7 @@ public class Inventory {
         }
     }
 
-    private void updateHelper(Item item, List<Item> list) {
+    private void updateHelper(Item item, List<Item> list) throws IOException {
         Scanner input = new Scanner(System.in);
         System.out.println("Current Details for " + item.getName() +" are:\n Quantity : " + item.getQuantity() + "\n Price : " + item.getPrice() + "\n Paid By : " + item.getPaidBy());
         list.remove(item);
