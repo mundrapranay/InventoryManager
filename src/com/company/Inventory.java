@@ -1,6 +1,8 @@
 package com.company;
 import java.util.*;
 
+// toDo: Make a global scanner instead of multiple scanner objects
+// toDo: Use global variables instead of local variables
 
 public class Inventory {
 
@@ -70,10 +72,13 @@ public class Inventory {
                 int itemNumber = input2.nextInt();
                 updateHelper(searchMap.get(itemNumber), list);
             } else if (selection2.equals("Q")) {
-                // toDo: Less than (inclusive), More than (exclusive), Equal to
-                // helper function
+                // toDo: Less than (inclusive), More than (inclusive), Equal to
+                searchMap = numberSearchHelper("Q", list);
+                System.out.println(searchMap);
             } else if (selection2.equals("P")) {
-                // toDo: Less than (inclusive), More than (exclusive), Equal to
+                // toDo: Less than (inclusive), More than (inclusive), Equal to
+                searchMap = numberSearchHelper("P", list);
+                System.out.println(searchMap);
             }else if (selection2.equals("M")) {
                 intro(list);
             } else {
@@ -132,7 +137,6 @@ public class Inventory {
         list.add(item);
         intro(list);
     }
-
     private Map<Integer, Item> search(String keyword, String option, List<Item> list) {
         Map<Integer, Item> result = new TreeMap<>();
         int itemCount = 0;
@@ -146,6 +150,71 @@ public class Inventory {
             if(keyword.toLowerCase().equals(checkWord.toLowerCase())) {
                 itemCount++;
                 result.put(itemCount, i);
+            }
+        }
+        return result;
+    }
+    // quantity is in int and price is in double
+    private Map<Integer, Item> numberSearchHelper (String option, List<Item> list) {
+        double price;
+        int quantity = 0;
+        System.out.println("Choose a search option:\n 1. Greater than(G)\n 2. Equal to(E)\n 3. Less than(L)");
+        Scanner input4 = new Scanner(System.in);
+        String type = input4.nextLine();
+        if (option.equals("Q")) {
+            System.out.println("Enter Quantity:");
+            quantity = input4.nextInt();
+            return numberSearch(type, quantity, list);
+        } else {
+            System.out.println("Enter price:");
+            price = input4.nextDouble();
+            return numberSearch(type, price, list);
+        }
+    }
+    private Map<Integer, Item> numberSearch (String type, int number, List<Item> list) {
+        Map<Integer, Item> result = new TreeMap<>();
+        int itemCount = 0;
+        for (Item i : list) {
+            int checkNumber = i.getQuantity();
+            if (type.equals("G")) {
+                if (checkNumber >= number) {
+                    itemCount++;
+                    result.put(itemCount,i);
+                }
+            } else if (type.equals("E")) {
+                if (checkNumber == number) {
+                    itemCount++;
+                    result.put(itemCount,i);
+                }
+            } else if (type.equals("L")) {
+                if (checkNumber <= number) {
+                    itemCount++;
+                    result.put(itemCount,i);
+                }
+            }
+        }
+        return result;
+    }
+    private Map<Integer, Item> numberSearch (String type, double number, List<Item> list) {
+        Map<Integer, Item> result = new TreeMap<>();
+        int itemCount = 0;
+        for (Item i : list) {
+            double checkNumber = i.getPrice();
+            if (type.equals("G")) {
+                if (checkNumber >= number) {
+                    itemCount++;
+                    result.put(itemCount,i);
+                }
+            } else if (type.equals("E")) {
+                if (checkNumber == number) {
+                    itemCount++;
+                    result.put(itemCount,i);
+                }
+            } else if (type.equals("L")) {
+                if (checkNumber <= number) {
+                    itemCount++;
+                    result.put(itemCount,i);
+                }
             }
         }
         return result;
